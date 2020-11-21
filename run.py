@@ -1,3 +1,4 @@
+from concurrent.futures import ThreadPoolExecutor
 from time import strftime, gmtime
 
 from data import load_data
@@ -9,37 +10,39 @@ from prediction import scores_and_fe, predict_test
 # hardcoded settings
 current_time = strftime("%Y%m%d%H%M%S", gmtime())
 
-# load data
-training_df, test_df = load_data()
-print('dataset loaded...')
+with ThreadPoolExecutor (max_workers=64) as executor:
 
-# data partitioning
-training_df, validation_df=training_validation_subset(training_df)
-print('dataset partitioned...')
+    # load data
+    training_df, test_df = load_data()
+    print('dataset loaded...')
 
-# encode features
-training_df=predictors_one_hot_encoding(training_df)
-training_df=response_outlier_capping(training_df, 'loss', 2.2)
-training_df=log_response(training_df, 'loss')
-print('dataset encoded...')
+    # data partitioning
+    training_df, validation_df=training_validation_subset(training_df)
+    print('dataset partitioned...')
 
-# feature set
-X=training_df.drop(['id', 'loss'], axis=1)
-y=training_df['loss']
-print('feature set selected...')
+    # encode features
+    training_df=predictors_one_hot_encoding(training_df)
+    training_df=response_outlier_capping(training_df, 'loss', 2.2)
+    training_df=log_response(training_df, 'loss')
+    print('dataset encoded...')
 
-# fit (and save) the model
-xgb_bo = bayes_cv_tuner.fit(X, y, callback=status_print)
-save_model(xgb_bo.best_estimator_, current_time)
-print('modelling complete...')
+    # feature set
+    X=training_df.drop(['id', 'loss'], axis=1)
+    y=training_df['loss']
+    print('feature set selected...')
 
-# scores and feature importance
-scores_and_fe(X, y, training_df, validation_df, xgb_bo.best_estimator_, current_time)
-print('modelling scores created...')
+    # fit (and save) the model
+    xgb_bo = bayes_cv_tuner.fit(X, y, callback=status_print)
+    save_model(xgb_bo.best_estimator_, current_time)
+    print('modelling complete...')
 
-# predict on test dataset
-predict_test(training_df, test_df, xgb_bo.best_estimator_, current_time)
-print('predictions complete...')
+    # scores and feature importance
+    scores_and_fe(X, y, training_df, validation_df, xgb_bo.best_estimator_, current_time)
+    print('modelling scores created...')
+
+    # predict on test dataset
+    predict_test(training_df, test_df, xgb_bo.best_estimator_, current_time)
+    print('predictions complete...')
 
 #Notes:
 # response variable: further investigate skewing using tukeys outliers
