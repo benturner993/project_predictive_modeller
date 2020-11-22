@@ -72,4 +72,4 @@ def save_model(model, current_time):
     pickle.dump(model, open(f'outputs/model_{current_time}.sav', 'wb'))
 
     # pmml
-    # sklearn2pmml(model, f'outputs/model_.pmml', with_repr=True)
+    # sklearn2pmml(model, X, y, "rf_pmml.pmml")

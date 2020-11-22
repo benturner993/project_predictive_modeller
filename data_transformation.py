@@ -56,3 +56,48 @@ def exp_response(df, response):
     ''' transform the response variable back to original'''
 
     df[response] = np.exp(df[response])
+
+
+def find_numerics(df):
+    ''' searches a dataframe and returns numeric columns (excluding id cols)'''
+
+    # numeric data types
+    numeric_dtype = ['int16', 'int32', 'int64', 'float16', 'float32', 'float64']
+
+    # define all numeric cols
+    all_numeric_columns = list(df.select_dtypes(include=numeric_dtype).columns)
+    id_columns = ['id', 'loss']
+
+    # define all numeric cols excluding id cols
+    numeric_columns = list(set(all_numeric_columns) - set(id_columns))
+    return numeric_columns
+
+
+def store_scaling_values(df):
+    ''' stores mean and std values '''
+
+    # load numeric features to be scaled
+    numeric_columns=find_numerics(df)
+
+    # create dataframe with stored values
+    scaling_df = pd.DataFrame([p, df[p].mean(), df[p].std()] for p in numeric_columns)
+    scaling_df.columns = ['col', 'mean', 'std']
+
+    # save the values
+    scaling_df.to_csv('outputs/scaling.csv', index=False)
+
+
+def scale_numerics(df):
+
+    ''' read the scaled values and convert numeric features '''
+
+    # read the scaled values
+    scaling_df = pd.read_csv('outputs/scaling.csv')
+
+    # scale columns
+    for i in range(scaling_df.shape[0]):
+        col = scaling_df.iloc[i][0]
+        mean = scaling_df.iloc[i][1]
+        std = scaling_df.iloc[i][2]
+        df[col] = (df[col] - mean) / std
+

@@ -3,7 +3,7 @@ import numpy as np
 from xgboost import plot_importance
 from matplotlib import pyplot as plt
 
-from data_transformation import predictors_one_hot_encoding, log_response, exp_response
+from data_transformation import predictors_one_hot_encoding, log_response, exp_response, scale_numerics
 
 from sklearn.metrics import mean_absolute_error
 
@@ -46,6 +46,7 @@ def transform_test(training_df, test_df):
     df_cols.remove('id')
 
     test_df = test_df[df_cols]
+    scale_numerics(test_df)
 
     return test_df
 
@@ -61,6 +62,7 @@ def scores_and_fe(X_train, y_train, training_df, validation_df, model, current_t
     validation_df = predictors_one_hot_encoding(validation_df)
     validation_df = transform_validation(training_df, validation_df)
     validation_df['loss'] = np.log(validation_df['loss']) #log_response
+    scale_numerics(validation_df)
     X_valid = validation_df.drop(['id', 'loss'], axis=1)
     y_valid = validation_df['loss']
     y_test_pred = model.predict(X_valid)

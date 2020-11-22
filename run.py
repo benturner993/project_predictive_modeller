@@ -3,7 +3,8 @@ from time import strftime, gmtime
 
 from data import load_data
 from data_partitioning import training_validation_subset
-from data_transformation import response_outlier_capping, log_response, predictors_one_hot_encoding
+from data_transformation import response_outlier_capping, log_response, predictors_one_hot_encoding, \
+    store_scaling_values, scale_numerics
 from modelling import bayes_cv_tuner, status_print, save_model
 from prediction import scores_and_fe, predict_test
 
@@ -24,6 +25,8 @@ with ThreadPoolExecutor (max_workers=64) as executor:
     training_df=predictors_one_hot_encoding(training_df)
     training_df=response_outlier_capping(training_df, 'loss', 2.2)
     training_df=log_response(training_df, 'loss')
+    store_scaling_values(training_df)
+    scale_numerics(training_df)
     print('dataset encoded...')
 
     # feature set
@@ -33,7 +36,7 @@ with ThreadPoolExecutor (max_workers=64) as executor:
 
     # fit (and save) the model
     xgb_bo = bayes_cv_tuner.fit(X, y, callback=status_print)
-    save_model(xgb_bo.best_estimator_, current_time)
+    save_model(xgb_bo.best_estimator_,current_time)
     print('modelling complete...')
 
     # scores and feature importance
