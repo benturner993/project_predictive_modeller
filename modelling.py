@@ -54,7 +54,7 @@ def status_print(optim_result):
 
     # Get current parameters and the best parameters
     best_params = pd.Series(bayes_cv_tuner.best_params_)
-    print('Model #{}\nBest ROC-AUC: {}\nBest params: {}\n'.format(
+    print('Model #{}\nBest Result: {}\nBest params: {}\n'.format(
         len(all_models),
         np.round(bayes_cv_tuner.best_score_, 4),
         bayes_cv_tuner.best_params_
@@ -72,4 +72,5 @@ def save_model(model, current_time):
     pickle.dump(model, open(f'outputs/model_{current_time}.sav', 'wb'))
 
     # pmml
-    # sklearn2pmml(model, X, y, "rf_pmml.pmml")
+    pmml_object=sklearn2pmml.make_pmml_pipeline(model)
+    sklearn2pmml.sklearn2pmml(pmml_object, f'outputs/model_{current_time}.pmml.xml')

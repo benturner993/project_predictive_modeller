@@ -21,9 +21,6 @@ def transform_validation(training_df, test_df):
         test_df[i] = pd.Series([0 for x in range(len(test_df.index))])
 
     df_cols = list(training_df.columns)
-    # df_cols.remove('loss')
-    # df_cols.remove('id')
-
     test_df = test_df[df_cols]
 
     return test_df
