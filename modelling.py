@@ -29,7 +29,7 @@ bayes_cv_tuner = BayesSearchCV(
         'colsample_bylevel': (0.01, 1.0, 'uniform'),
         #'reg_lambda': (1e-9, 1000, 'log-uniform'),
         'reg_alpha': (1e-9, 1.0, 'log-uniform'),
-        'gamma': (1e-9, 0.5, 'log-uniform'),
+        'gamma': (1e-9, 1.0, 'log-uniform'),
         'min_child_weight': (0, 5),
         'n_estimators': (50, 100)
         # 'scale_pos_weight': (1e-6, 500, 'log-uniform')

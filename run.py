@@ -46,21 +46,3 @@ with ThreadPoolExecutor (max_workers=64) as executor:
     # predict on test dataset
     predict_test(training_df, test_df, xgb_bo.best_estimator_, current_time)
     print('predictions complete...')
-
-#Notes:
-# response variable: further investigate skewing using tukeys outliers
-# look at residuals after model build and find if normally distributed
-# box cox transform, optimal to power to transform by (transform data thats postivie)
-#scaling
-#null values
-#dataset partititions on train
-#modelling
-#algorithm
-#hyperopt
-#stacking
-#predictions
-#save model
-#boxcox
-#interpretation - partial dependence plots
-# add logger
-# pmml
